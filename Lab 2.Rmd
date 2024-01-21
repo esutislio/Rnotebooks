@@ -1,0 +1,388 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+
+```
+
+
+```{r}
+store <- read.csv("Superstore.csv", TRUE, ",")
+store
+```
+
+
+```{r}
+ggplot(store, aes(x = Shipping.Cost)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black", alpha = 1) + 
+  labs(title = "Distribution of Shipping Cost", 
+       x = "Shipping Cost",
+       y = "Frequency")
+  # alpha means like the boldness, how transparent you want the color to be, ranging from 0 to 1, 0 is transparent
+# labs() xlab() ylab() ggtitle()
+# Modify axis, legend, and plot labels
+
+most_common_value <- store$Shipping.Cost[which.max(table(store$Shipping.Cost))]
+most_common_value
+```
+
+
+```{r}
+library(dplyr)  # Make sure to include the dplyr library
+# 3. Create a histogram of the distribution of order quantity for each ship mode. Use a binwidth of 1. 
+# Add facet_wrap(~Ship.Mode, scales="free_y") to show separate plots by ship mode.
+# Which ship mode has most transactions with order quantity above 100?
+ggplot(store, aes(x = Order.Quantity)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black", alpha = 1) +
+  facet_wrap(~Ship.Mode, scales = "free_y") +
+  labs(title = "Distribution of Order Quantity by Ship Mode",
+       x = "Order Quantity",
+       y = "Frequency")
+
+store
+```
+
+
+```{r}
+# 4. Create a histogram of the distribution of unit price across all records in the data. Use a binwidth of 1. Zoom in.
+# What value of unit price is most common?
+ggplot(store, aes(x = Unit.Price)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black", alpha = 0.7) +
+  coord_cartesian(xlim = c(0, 20)) +  # Adjust xlim for zooming in
+  labs(title = "Distribution of Unit Price",
+       x = "Unit Price",
+       y = "Frequency")
+
+x <- table(store$Unit.Price)
+# Find the most common value of unit price
+most_common_unit_price <- store$Unit.Price[which.max(x)]
+most_common_unit_price
+x[which.max(x)]
+x[13]
+x
+
+
+```
+
+
+```{r}
+v <- store$Unit.Price
+v
+```
+
+
+```{r}
+# 5. Create a boxplot of the distribution of unit price for each product category.
+# How many categories have no outliers?
+ggplot(store, aes( Unit.Price, Category)) +
+  geom_boxplot(binwidth = 1, fill = "blue", color = "black", alpha = 0.7,
+                outlier.shape = 19,
+                outlier.size = 1.5,
+                outlier.stroke = 0.5) +
+  coord_cartesian(xlim = c(0, 3000)) +  # Adjust xlim for zooming in
+  labs(title = "Distribution of Unit Price",
+       x = "Unit.Price",
+       y = "Category")
+
+
+```
+
+
+```{r}
+column_names <- names(store)
+column_names
+```
+
+
+```{r}
+# 6. Create a bar chart of count of transactions for each customer segment, and each bar consists of segments colored by ship mode.
+# Which customer segment has the most transactions using regular air? 
+# 
+ggplot(store, aes(Customer.Segment)) +
+  geom_bar(aes(fill=Ship.Mode))
+labs(title = "Count of Transactions by Customer Segment (Colored by Ship Mode)",
+       x = "Customer Segment",
+       y = "Transaction Count",
+       fill = "Ship Mode")
+# 
+# ggplot(store, aes(x = Customer.Segment, fill = Ship.Mode)) +
+#   geom_bar() +
+#   labs(title = "Count of Transactions by Customer Segment (Colored by Ship Mode)",
+#        x = "Customer Segment",
+#        y = "Transaction Count",
+#        fill = "Ship Mode")
+
+```
+
+
+```{r}
+# 7. Create a bar chart of sales by product category for each region. 
+# In the East, which category generated the most sales?
+
+east_sales <- store %>%
+  filter(Region %in% c("East"))
+# Create a bar chart of sales by product category for each region
+ggplot(east_sales, aes(x = Category, y = Sales)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Sales by Product Category in the East",
+       x = "Product Category",
+       y = "Sales") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1, size = 6))
+
+```
+
+
+```{r}
+ggplot(store, aes(x = Category, y = Sales, fill = Region)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~Region, scales = "free_y")+
+  labs(title = "Sales by Product Category for Each Region",
+       x = "Product Category",
+       y = "Sales",
+       fill = "Region") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0
+                                   , hjust = 1, size=5))
+
+```
+
+
+```{r}
+# 8. Create a bar chart of count of customers by state, where each bar consists of parts colored by customer segment. Which state has the most number of small business customers? 
+
+# Set global options to control plot size
+options(repr.plot.width = 30, repr.plot.height = 30)
+
+ggplot(store, aes(x = State, y = Sales, fill = Customer.Segment)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~Customer.Segment, scales = "free_y")+
+  labs(title = "Sales by Product Category for Each Region",
+       x = "State",
+       y = "Sales",
+       fill = "Customer.Segment") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0
+                                   , hjust = 1, size=6))
+
+
+```
+
+```{r}
+
+small_biz <- store %>%
+  filter(Customer.Segment %in% c("Small Business"))
+
+# View the filtered data
+View(small_biz)
+
+
+```
+
+
+```{r}
+
+# Create a bar chart of count of customers by state
+ggplot(small_biz, aes(x = State)) +
+  geom_bar() +
+  labs(title = "Count of Customers by State",
+       x = "State",
+       y = "Customer Count")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0
+                                   , hjust = 1, size=6))
+  
+
+
+```
+
+
+```{r}
+# 9. Extract year and month from Date variable as follows: 
+# data$Order.Date <- as.Date(data$Order.Date, "%m/%d/%Y")
+# data$year <- format(data$Order.Date,"%Y")
+# data$month <- format(data$Order.Date,"%m")
+# Create a boxplot of sales by month. Zoom in. Which month has the highest median of sales? Enter a number for the month.
+
+# Convert Order.Date to Date type
+store$Order.Date <- as.Date(store$Order.Date, "%m/%d/%Y")
+
+# Extract year and month
+store$year <- format(store$Order.Date, "%Y")
+store$month <- format(store$Order.Date, "%m")
+
+# Create a boxplot of sales by month
+ggplot(store, aes(x = factor(month), y = Sales)) + # factors is used to convert char or numeric variable to categorical (factor) variable
+  geom_boxplot(fill = "blue", color = "black", alpha = 0.7, outlier.shape = 19, outlier.size = 1.5) +
+  labs(title = "Boxplot of Sales by Month",
+       x = "Month",
+       y = "Sales") +
+  coord_cartesian(ylim = c(0, 2000)) +  # Adjust ylim for zooming in
+  theme(axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1, size = 8))
+```
+
+
+```{r}
+column_names <- names(store)
+column_names
+```
+
+
+```{r}
+# 10. Extract year_month from Date variable using "data$year_month <- format(data$Order.Date,"%Y/%m")"
+
+# Create a boxplot of order quantity by year_month. Zoom in. Which year_month has the highest third quartile for order quantity ? Enter a number for the year_month (e.g. 2001/02 would be 200102)
+
+store$year_month <- format(store$Order.Date,"%Y/%m")
+
+# Create a boxplot of Order.Quantity by year_month
+ggplot(store, aes(x = year_month, y = Order.Quantity)) + 
+  geom_boxplot(fill = "blue", color = "black", alpha = 0.7, outlier.shape = 19, outlier.size = 1.5) +
+  labs(title = "Boxplot of Sales by Month",
+       x = "year_month",
+       y = "Order.Quantity") +
+  coord_cartesian(ylim = c(0, 50)) +  # Adjust ylim for zooming in
+  theme(axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1, size = 8))
+```
+
+
+
+```{r}
+sb_ho <- store %>%
+  filter(Customer.Segment %in% c("Small Business", "Home Office"))
+View(sb_ho)
+```
+
+
+```{r}
+# 11. Create a bar chart of total number of customers by customer segment for each region. Which region has more sales from small business customers than home office customers? 
+
+ggplot(store, aes(x = Region, fill = Customer.Segment)) +
+  geom_bar(position = "stack") +
+  geom_text(aes(label =  after_stat(count)), stat = "count", position = position_stack(vjust = 0.5), size = 3) +
+  labs(title = "Total Number of Customers by Customer Segment for Each Region",
+       x = "Region",
+       y = "Total Number of Customers",
+       fill = "Customer Segment") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1, size = 8))
+
+
+```
+
+
+```{r}
+# 12. Create a bar chart of order quantity by year_month. Zoom in. Which year_month has the highest order quantity ? Enter a number for the year_month (e.g. 2001/02 would be 200102).
+
+# (stat= 'identity') means that x should proportionate to y, they should reflect actual values.
+
+# Create a bar chart of order quantity by year_month
+ggplot(store, aes(x = year_month, y = Order.Quantity)) +
+  geom_bar(stat = "identity", fill = "blue", color = "black", alpha = 0.7) +
+  geom_text(stat = "identity", aes(label = Order.Quantity), vjust = -0.5, size = 3) +  # Add labels
+  labs(title = "Order Quantity by year_month",
+       x = "year_month",
+       y = "Order Quantity") +
+  coord_cartesian(ylim = c(0, 20000)) +  # Adjust ylim for zooming in
+  theme(axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1, size = 8))
+
+
+
+```
+
+
+```{r}
+# 13. Create a density plot of profit for each product category. Which category has the greatest variance (widest distribution) in profit? 
+# ggplot(store, aes(x = Profit, fill = Category)) +
+#   geom_density(kernel = 'gaussian', alpha = 100)
+
+
+ggplot(store, aes(x = Profit, fill = Category)) +
+  geom_density(alpha = 0.7) +
+  labs(title = "Density Plot of Profit for Each Product Category",
+       x = "Profit",
+       fill = "Product Category") +
+  theme_minimal() +
+  coord_cartesian(xlim = c(-500,500))
+  coord_cartesian(ylim = c(0,0.02))
+```
+
+
+```{r}
+var_category <- store %>%
+  group_by(Category) %>%
+  summarise(variance = sd(Profit))
+
+# Identify the category with the highest variance
+category_with_highest_variance <- var_category %>%
+  filter(variance == max(variance))
+
+category_with_highest_variance
+```
+
+
+```{r}
+# 14. Test the null hypothesis that mean unit price across all transactions is equal for the categories 'appliances' and 'storage & organization' at 95% confidence level. What is the p-value? Round answer to nearest 2 decimals.
+
+subset_data <- store %>%
+  filter(Category %in% c('appliances', 'storage & organization'))
+
+# the " ~ " symbol shows relationship like y ~ x (in linear regression) --> the left side is dependent variable (y) and right side is independent (X), in the context of t-test, the ~ represents variable ~ group
+# variable ~ group : variable is numeric and group is categorical
+
+# Perform two-sample t-test
+t_test_result <- t.test(Unit.Price ~ Category, data = subset_data)
+
+# Extract p-value
+p_value <- t_test_result$p.value
+
+# Round the p-value to the nearest 2 decimals
+p_value <- round(p_value, 2)
+
+p_value
+```
+
+
+```{r}
+
+df <- store %>% filter(Category == 'Appliances' | Category == 'Storage & Organization')
+t.test(Unit.Price ~ Category, data = df, conf.level = 0.95)
+
+```
+
+
+```{r}
+# 15. Test the null hypothesis that mean unit price across all transactions <= 83 at 95% confidence level. What is the p-value? Round answer to nearest 2 decimals.
+
+# Test the null hypothesis that mean percollege <= 83 at 95% confidence level
+# alternative hypothesis: true mean is more than 83
+t.test(store$Unit.Price, mu = 83, paired = FALSE, alternative = 'greater', conf.level = 0.95)
+
+```
+
+
+```{r}
+# 16. Test whether category, state, and their interaction have an effect on sales at the transaction level. What is the F-statistic (F value) for state? Round answer to nearest 2 decimals.
+
+model <- lm(Sales ~ Category * State, data = store)
+anova_result <- anova(model)
+anova_result
+
+```
+
+
+```{r}
+
+interaction <- aov(Sales ~ Category*State, data = store)
+
+summary(interaction)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

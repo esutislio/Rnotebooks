@@ -1,0 +1,172 @@
+---
+title: "R Basics"
+output: html_notebook
+---
+
+```{r}
+# install package ggplot2 if needed 
+# install.packages('ggplot2')
+
+# short-cut to run a block: ctrl + shft + enter
+# short-cut to run a line: ctrl + enter
+# short-cut to create a block for coding: ctrl + alt + I
+# move up/down blocks: ctrl + PgUp/PgDn
+# short-cut to comment code is ctrl + shft + c
+
+```
+
+```{r}
+# import library and built-in datasets 
+# install.packages('ggplot2')
+store <- read.csv("Superstore.csv", TRUE, ",")
+head(store)
+```
+
+```{r}
+# 2. Create a sequence of numbers from 1 to 500 with interval of 5. What is the mean of this sequence? Round your answer to nearest 1 decimal. 
+
+y <- seq(1, 500, by = 5)
+mean(y)
+```
+
+```{r}
+# 3. Create a vector of numbers that repeats the sequence (1, 2, 3) ten times. What is the variance of this vector? Round your answer to nearest 2 decimals. 
+
+v <- 1:3
+v <- rep(v, times = 10)
+var(v)
+```
+
+```{r}
+# 4. Create a vector that repeats the sequence (1, 2, 3) ten times. Create another vector that repeats the sequence (4, 5, 6) ten times. Concatenate the vectors using c(v1, v2). What is the standard deviation of the resulting vector? Round your answer to nearest 2 decimals. 
+
+v <- 1:3
+v <- rep(v, times = 10)
+v
+
+v2 <- 4:6
+v2 <- rep(v2, times = 10)
+v2
+
+v3 <- c(v,v2)
+v3
+
+sd(v3)
+signif(sd(v3),3)
+
+
+```
+
+```{r}
+# 5. Create a sequence of numbers from 1 to 500 with interval of 5.5. What is the number at the 75th percentile? Round your answer to nearest 2 decimals. 
+
+
+y <- seq(1, 500, by = 5.5)
+quantile(y)
+
+```
+
+```{r}
+# 6. Use the Superstore data. What is the mean value of all sales across all transactions (rows) in the data? Round your answer to nearest 1 decimal. 
+store
+sales_column <- store$Sales
+mean(sales_column)
+round(mean(sales_column), 1)
+```
+
+```{r}
+# 7. Use the Superstore data. What is the value of the cell at row 500 and column 21? 
+y <- store[500,21]
+y
+```
+
+
+```{r}
+# 8. Use the Superstore data. What is the value of the cell at row 300 in the sales column?
+sales_300 <- store$Sales[300]
+sales_300
+```
+
+
+```{r}
+# 9. Use the Superstore data. What is the absolute value of the difference between the values at index (655, 15) and index (815, 21)? Use the abs() function. 
+
+v9 <- store[655,15]
+v9_2 <- store[815,21]
+v9_f <-abs(v9-v9_2)
+v9_f
+
+```
+
+
+```{r}
+# 10. Use the Superstore data. Use a logical statement to check whether the values at index (860, 15) and index (54, 24) are equal. What does the logical statement return? 
+v10 <- store[860, 15]
+v10_2 <- store[54, 24]
+are_values_equal <- v10 == v10_2
+are_values_equal
+```
+
+
+```{r}
+# 11. Use the Superstore data. What is the correlation between the variables profit and unit price? Round your answer to nearest 2 decimals. 
+x <- store$Profit
+y <- store$Unit.Price
+cor(x, y)
+q11 = round(cor(x,y),2)
+```
+
+
+```{r}
+# 12. Use the Superstore data. What is the mean value of all numbers in column 15 (i.e. the column with index 15) in the data? Round your answer to nearest 1 decimal. 
+
+col_15 <- store[, 15]
+
+mean_column_15 <- mean(col_15, na.rm = TRUE) 
+
+# Round the result to one decimal place
+q_12 <- round(mean_column_15, 1)
+q_12
+```
+
+
+```{r}
+# 13. Use the Superstore data. Extract the profit column as a list. How many values of profit are less than 0? One way is to use the length() function to get the number of elements in a list.
+profit <- store$Profit
+count_loss <- length(which(profit < 0))
+count_loss
+```
+
+
+```{r}
+# 14. Use the Superstore data. How many values of order quantity are equal to 1?
+order_qty <- store$Order.Quantity
+count_orderqty <- length(which(order_qty == 1))
+count_orderqty
+
+```
+
+
+```{r}
+# 15. Use the Superstore data. How many unique values are there for sales?
+n_sales <- length(unique(store$Sales))
+n_sales
+```
+
+
+```{r}
+# 16. Use the Superstore data. Extract the profit column as list. What is the rank of the value at index 16 in the entire list? 
+rank_profit = rank(profit)
+rank_16 = rank_profit[16]
+rank_16
+
+
+```
+
+
+```{r}
+```
+
+
+```{r}
+```{r}
